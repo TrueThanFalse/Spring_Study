@@ -1,0 +1,30 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper
+  PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+  "https://mybatis.org/dtd/mybatis-3-mapper.dtd">
+  
+<mapper namespace="com.ezen.www.repository.MemberDAO">
+  
+	<select id="getUser" resultType="com.ezen.www.domain.MemberVO">
+		SELECT * FROM member WHERE id = #{id}
+	</select>
+  
+	<insert id="insert">
+		INSERT INTO member(id, pw, name, email, home, age)
+		VALUES(#{id}, #{pw}, #{name}, #{email}, #{home}, #{age})
+	</insert>
+	
+	<update id="last_loginUpdate">
+		UPDATE member SET last_login = now() WHERE id = #{id}
+	</update>
+	
+	<update id="PasswordUpdate">
+		UPDATE member SET pw = #{pw}, name = #{name}, email = #{email}, home = #{home}, age = #{age}
+		WHERE id = #{id}
+	</update>
+	
+	<delete id="withdrawal">
+		DELETE FROM member WHERE id = #{loginID}
+	</delete>
+	
+</mapper>

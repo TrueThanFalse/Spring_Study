@@ -1,0 +1,49 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper
+  PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+  "https://mybatis.org/dtd/mybatis-3-mapper.dtd">
+  
+<mapper namespace="com.ezen.www.repository.BoardDAO">
+
+	<!-- Alias 없이 작성하는 방법 : 경로를 정확하게 작성해야 함 -->
+	<insert id="register" parameterType="com.ezen.www.domain.BoardVO">
+		INSERT INTO board(title, writer, content)
+		VALUES(#{title}, #{writer}, #{content})
+	</insert>
+
+	<select id="getList" resultType="com.ezen.www.domain.BoardVO">
+		SELECT * FROM board
+		WHERE isDel = 'N'
+		ORDER BY bno DESC
+		<!-- 페이지네이션 추가로 인한 LIMIT 구문 추가 -->
+		LIMIT #{pageStart}, #{qty}
+	</select>
+	
+	<select id="getDetail" parameterType="int" resultType="com.ezen.www.domain.BoardVO">
+		SELECT * FROM board
+		WHERE bno = #{bno}
+	</select>
+	
+	<update id="read_countUP">
+		UPDATE board SET read_count = read_count + 1
+		WHERE bno = #{bno}
+	</update>
+	
+	<update id="edit">
+		UPDATE board SET
+		title = #{title},
+		content = #{content},
+		reg_date = now(),
+		read_count = read_count-2
+		WHERE bno = #{bno}
+	</update>
+	
+	<update id="delete">
+		<!-- DELETE FROM board WHERE bno = #{bno} -->
+		UPDATE board SET isDel = "Y" WHERE bno = #{bno}
+	</update>
+	
+	<select id="getTotalCount" resultType="int">
+		SELECT count(bno) FROM board WHERE isDel = 'N'
+	</select>
+</mapper>
