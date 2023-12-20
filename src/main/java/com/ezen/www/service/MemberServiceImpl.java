@@ -20,6 +20,7 @@ public class MemberServiceImpl implements MemberService{
 	
 	@Inject
 	BCryptPasswordEncoder passwordEncoder;
+	// 비밀번호 암호화 클래스
 	
 	@Inject
 	HttpServletRequest request;
@@ -27,9 +28,9 @@ public class MemberServiceImpl implements MemberService{
 	@Override
 	public int signUp(MemberVO mvo) {
 		log.info("register check 1");
-		// 규칙 1. 아이디가 중복되면 회원가입 실패
+		// 규칙 : id가 중복되면 회원가입 불가
 		// => 아이디만 주고 DB에서 일치하는 mvo 객체를 리턴 받기
-		// 일치하는 유저가 있으면 가입 실패, 없다면 가입 성공
+		// => 일치하는 유저가 있으면 가입 실패, 없다면 가입 성공
 		
 		MemberVO tempMvo = mdao.getUser(mvo.getId());
 		if(tempMvo != null) {
@@ -89,11 +90,12 @@ public class MemberServiceImpl implements MemberService{
 	public int loginUserUpdate(MemberVO mvo) {
 		log.info("edit check 2");
 		// 비밀번호를 변경하지 않았을 때와 변경했을 때의 경우를 나눠야 함
-		// pw의 여부에 따라서 변경사항을 나누어 처리
 		// pw가 없다면 기존값으로 설정, pw가 있다면 암호화 처리하여 수정
 		
-		// 가능하면 DB에서 복잡하게 처리하지말고 JAVA에서 전부 처리해서 DB로 넘어가는 것이 비용적 측면으로 좋다.
-		// DB 구문은 최대한 간결한 것이 효율적이고 비용이 적게 든다.
+		// sql 구문으로 DB에서 pw 유무에 따라 처리하는 것도 할 수 있지만
+		// 가능하면 DB에서 복잡하게 처리하지 말고 JAVA에서 전부 처리해서 DB로 넘어가는 것이
+		// 효율적이고 금전적으로 좋다. (DB 사용료는 비싸다.)
+		// DB 구문은 최대한 간결한 것이 효율적이고 비용이 적게 들어간다.
 		/*
 		if(mvo.getPw() == null || mvo.getPw().length() == 0) {
 			return mdao.notPasswordUpdate(mvo);
@@ -104,6 +106,8 @@ public class MemberServiceImpl implements MemberService{
 			return mdao.PasswordUpdate(mvo);
 		}
 		*/
+		
+		// 따라서 pw 유무에 따라 mvo 객체를 생성해서 DB로 전달하여 sql 구문을 작성함
 		if(mvo.getPw() == null || mvo.getPw().length() == 0) {
 			MemberVO sesMvo = (MemberVO)request.getSession().getAttribute("ses");
 			mvo.setPw(sesMvo.getPw());

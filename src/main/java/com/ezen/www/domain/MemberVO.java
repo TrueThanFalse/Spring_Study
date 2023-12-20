@@ -34,5 +34,4 @@ public class MemberVO {
 	private int age;
 	private String reg_date;
 	private String last_login;
-	
 }

@@ -57,14 +57,15 @@ public class BoardController {
 		log.info("list check 1");
 		// 리턴 타입은 목적지 경로에 전송할 때 보내는 데이터 형식
 		log.info("pgvo >>>>> "+pgvo);
+		// pgvo 같은 객체를 활용하면 어떤 값이든 하나만 들어오면 NullPointerException을 예방할 수 있음
 		
 		// Model 객체 => setAttribute 역할을 할 수 있는 객체
-		// addAttribute => setAttributes 같은 역할
+		// addAttribute => request 객체의 setAttributes 같은 역할
 		// addAttribute : 파라미터로 데이터를 전송
 		m.addAttribute("list", bsv.getList(pgvo));
 		
 		// ph 객체 생성 (pgvo, totalCount)
-		int totalCount = bsv.getTotalCount();
+		int totalCount = bsv.getTotalCount(pgvo);
 		PagingHandler ph = new PagingHandler(pgvo, totalCount);
 		m.addAttribute("ph", ph);
 		

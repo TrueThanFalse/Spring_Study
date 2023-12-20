@@ -14,14 +14,15 @@
 	<select id="getList" resultType="com.ezen.www.domain.BoardVO">
 		SELECT * FROM board
 		WHERE isDel = 'N'
+		<!-- and (... or ...) -->
+		<include refid="search"></include>
 		ORDER BY bno DESC
 		<!-- 페이지네이션 추가로 인한 LIMIT 구문 추가 -->
 		LIMIT #{pageStart}, #{qty}
 	</select>
 	
 	<select id="getDetail" parameterType="int" resultType="com.ezen.www.domain.BoardVO">
-		SELECT * FROM board
-		WHERE bno = #{bno}
+		SELECT * FROM board WHERE bno = #{bno}
 	</select>
 	
 	<update id="read_countUP">
@@ -44,6 +45,43 @@
 	</update>
 	
 	<select id="getTotalCount" resultType="int">
-		SELECT count(bno) FROM board WHERE isDel = 'N'
+		SELECT count(bno) FROM board
+		WHERE isDel = 'N'
+		<include refid="search"></include>
 	</select>
+	
+	<!-- 검색을 위한 동적 쿼리 작성 -->
+	<!-- select * from board where isDel = 'N' and ( ..or ..or ..or ) -->
+	<!-- 조건을 isDel로 이미 하나 작성하고 있음 -->
+	<!-- 따라서 where isDel = 'N' 이후에 -->
+	<!-- and (... or ...) 추가해야 함 -->
+	<sql id="search">
+		<if test="type != null">
+			<!-- suffixOverrides : 가장 마지막에 존재하는 or을 지워라 -->
+			<trim prefix="and (" suffix=")" suffixOverrides="or">
+				<!-- 만약 여러개의 배열이 아닌 type을 하나만 사용한다면 forEach가 필요 없음 -->
+				<!-- PagingVO의 getTypeToArray 메서드 호출 -->
+				<foreach collection="typeToArray" item="type">
+					<trim suffix="or">
+						<choose>
+							<!-- type == 't' => t를 문자로 인식하지 않음 : Error -->
+							<!-- type == t => t를 변수명으로 인식함 : Error -->
+							<!-- 따라서 to.String() 메서드를 활용하여 문자로 확실하게 인식 시켜야 함 -->
+							<when test="type == 't'.toString()">
+								<!-- #{keyword}를 인식시키기 위해서 concat 함수를 활용 -->
+								title like concat('%', #{keyword}, '%')
+							</when>
+							<when test="type == 'w'.toString()">
+								writer like concat('%', #{keyword}, '%')
+							</when>
+							<when test="type == 'c'.toString()">
+								content like concat('%', #{keyword}, '%')
+							</when>
+						</choose>
+					</trim>
+				</foreach>
+			</trim>
+		</if>
+	</sql>
+	
 </mapper>

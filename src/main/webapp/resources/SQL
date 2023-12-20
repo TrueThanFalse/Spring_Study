@@ -1,41 +1,52 @@
 <<< 2023-12-14 >>> 
-DB 프로그램에 DB 설정하기
+MySql에 DB 설정하기
+MySql에 root 계정으로 로그인 후
 
-로그인 계정은 root 계정으로 실행해서
-1. springtest DB 생성
-create database springtest;
+● springtest DB 생성
+	create database springtest;
 
-2. user 생성
-create user springUser@localhost identified by 'mysql';
+● user 계정 생성
+	create user springUser@localhost identified by 'mysql';
 
-3. 권한 생성
-grant all privileges on springtest.* to 'springUser'@'localhost';
+● 권한 부여
+	grant all privileges on springtest.* to 'springUser'@'localhost';
 
-4. 권한 설정 내용을 메모리에 반영시키기
-flush privileges;
+● 권한 부여 내용을 메모리에 반영시키기
+	flush privileges;
 
-5. 테이블 생성하기
-create table board(
-bno int auto_increment,
-title varchar(200),
-writer varchar(200),
-content text,
-isDel varchar(10) default 'N',
-reg_date datetime default now(),
-read_count int,
-primary key(bno)
-);
+● board table 생성하기
+	create table board(
+	bno int auto_increment,
+	title varchar(200),
+	writer varchar(200),
+	content text,
+	isDel varchar(10) default 'N',
+	reg_date datetime default now(),
+	read_count int,
+	primary key(bno)
+	);
 
 alter table board modify read_count int default 0;
 
 <<< 2023-12-18 >>>
-create table member(
-id varchar(100) not null,
-pw varchar(100) not null,
-name varchar(100),
-email varchar(100),
-home varchar(100),
-age int,
+● member table 생성
+	create table member(
+	id varchar(100) not null,
+	pw varchar(100) not null,
+	name varchar(100),
+	email varchar(100),
+	home varchar(100),
+	age int,
+	reg_date datetime default now(),
+	last_login datetime default now(),
+	primary key(id));
+	
+<<< 2023-12-20 >>>
+● comment table 생성
+create table comment(
+cno int auto_increment,
+bno int not null,
+writer varchar(100) not null,
+content varchar(500),
 reg_date datetime default now(),
-last_login datetime default now(),
-primary key(id));
+primary key(cno));

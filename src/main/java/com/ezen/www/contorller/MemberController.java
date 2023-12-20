@@ -25,16 +25,16 @@ public class MemberController {
 	private MemberService msv;
 	
 	@GetMapping("/register")
-	public void register() {
-		
-	}
+	public void register() {}
 	
 	@PostMapping("/register")
 	public String register(MemberVO mvo) {
 		log.info("register check 1");
 		log.info("mvo >>>>> "+mvo);
+		
 		int isOK = msv.signUp(mvo);
 		log.info("signUp >>>>> "+(isOK > 0 ? "Success" : "Fail"));
+		
 		return "index";
 	}
 	
@@ -42,11 +42,11 @@ public class MemberController {
 	public void login() {}
 	
 	@PostMapping("/login")
-	public String login(MemberVO mvo, Model m,HttpServletRequest request) {
+	public String login(MemberVO mvo, Model m, HttpServletRequest request) {
 		log.info("login check 1");
 		log.info("mvo >>>>> "+mvo);
 		
-		// mvo 객체가 DB의 값과 일치하는지 체크
+		// 입력 받은 mvo 객체가 DB의 member와 일치하는 것이 있는지 체크
 		MemberVO loginMvo = msv.isUser(mvo);
 		
 		if(loginMvo != null) {
@@ -65,7 +65,8 @@ public class MemberController {
 	@GetMapping("/logout")
 	public String logout(Model m, HttpServletRequest request) {
 		log.info("logout check 1");
-		// last_login update
+		
+		// 로그아웃 실행 전 last_login update
 		MemberVO mvo = (MemberVO)request.getSession().getAttribute("ses");
 		msv.last_loginUpdate(mvo.getId());
 		
@@ -73,14 +74,12 @@ public class MemberController {
 		request.getSession().removeAttribute("ses");
 		request.getSession().invalidate();
 		m.addAttribute("msg_logout", 1);
+		
 		return "index";
 	}
 	
 	@GetMapping("/modify")
-	public void modify(HttpServletRequest request, Model m) {
-		MemberVO mvo = (MemberVO)request.getSession().getAttribute("ses");
-		m.addAttribute(mvo);
-	}
+	public void modify() {}
 	
 	@PostMapping("/edit")
 	public String edit(MemberVO mvo, RedirectAttributes re) {
@@ -89,7 +88,7 @@ public class MemberController {
 		log.info("edit >>>>> "+(isOK > 0 ? "Success" : "Fail"));
 		
 		re.addFlashAttribute("msg_edit", isOK);
-		// return을 index에서 redirect:/member/logout로 변경하여 아래 코드는 필요 없음
+		// return을 index에서 redirect:/member/logout로 변경하여 아래 코드는 생략
 		/*
 		수정 완료 후 세션 끊기
 		request.getSession().removeAttribute("ses");
@@ -111,6 +110,7 @@ public class MemberController {
 		request.getSession().removeAttribute("ses");
 		request.getSession().invalidate();
 		m.addAttribute("msg_withdrawal", isOK);
+		
 		return "index";
 	}
 }
