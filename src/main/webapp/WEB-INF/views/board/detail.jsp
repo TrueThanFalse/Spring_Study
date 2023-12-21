@@ -60,10 +60,11 @@
 <hr>
 	<!-- 댓글 표시 라인 -->
 <div class="accordion" id="accordionPanelsStayOpenExample">
+<!-- 이 내부 내용은 샘플임, 실제로는 JS에서 for문으로 작성되어 출력됨 -->
   <div class="accordion-item">
     <h2 class="accordion-header">
       <button class="accordion-button" type="button" data-bs-toggle="collapse" data-bs-target="#panelsStayOpen-collapseOne" aria-expanded="true" aria-controls="panelsStayOpen-collapseOne">
-        cno, writer, reg_date + 수정,삭제 버튼
+        cno, writer, reg_date
       </button>
     </h2>
     <div id="panelsStayOpen-collapseOne" class="accordion-collapse collapse show">
@@ -81,6 +82,9 @@
 	</script>
 	<!-- servlet-context.xml를 보면 resources 맵핑이 되어 있음 -->
 	<script src="/resources/js/boardComment.js"></script>
+	<script type="text/javascript">
+		PrintCommentList(bnoVal);
+	</script>
 	<jsp:include page="../layout/footer.jsp"></jsp:include>
 	
 </body>

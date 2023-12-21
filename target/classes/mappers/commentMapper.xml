@@ -5,7 +5,22 @@
 
 <mapper namespace="com.ezen.www.repository.CommentDAO">
 	
+	<insert id="post">
+		INSERT INTO comment(bno, writer, content)
+		VALUES(#{bno}, #{writer}, #{content})
+	</insert>
 	
+	<select id="getList" resultType="com.ezen.www.domain.CommentVO">
+		SELECT * FROM comment WHERE bno = #{bno}
+	</select>
 	
+	<delete id="commentDelete">
+		DELETE FROM comment WHERE cno = #{cno}
+	</delete>
+	
+	<update id="modify">
+		UPDATE comment SET content = #{content}
+		WHERE cno = #{cno}
+	</update>
 	
 </mapper>

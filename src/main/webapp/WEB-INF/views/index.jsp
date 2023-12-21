@@ -5,17 +5,21 @@
 
 <jsp:include page="./layout/header.jsp"></jsp:include>
 
-<h1>
-	<%-- !DOCTYPE html,html,head,body 등의 태그들을 layout의 header,footer에서 처리해 줌 --%>
-	Hello world!
-</h1>
+<div class="container-md">
+	<h1>
+		<%-- !DOCTYPE html,html,head,body 등의 태그들을 layout의 header,footer에서 처리해 줌 --%>
+		Hello world!
+	</h1>
+	
+	<c:if test="${ses.id ne null }">
+		<div>
+			<p>${ses.id }님 환영합니다.</p>
+			<p>last_login : ${ses.last_login }</p>
+		</div>
+	</c:if>
+</div>
 
-<c:if test="${ses.id ne null }">
-	<div>
-		<p>${ses.id }님 환영합니다.</p>
-		<p>last_login : ${ses.last_login }</p>
-	</div>
-</c:if>
+<jsp:include page="./layout/footer.jsp"></jsp:include>
 
 <script type="text/javascript">
 	const msg_login = `<c:out value="${msg_login}"/>`;
@@ -37,4 +41,3 @@
 	}
 </script>
 
-<jsp:include page="./layout/footer.jsp"></jsp:include>
