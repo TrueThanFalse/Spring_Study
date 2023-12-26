@@ -19,7 +19,7 @@
 	</delete>
 	
 	<update id="modify">
-		UPDATE comment SET content = #{content}
+		UPDATE comment SET content = #{content}, reg_date = now()
 		WHERE cno = #{cno}
 	</update>
 	

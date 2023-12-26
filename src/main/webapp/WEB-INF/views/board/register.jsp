@@ -14,7 +14,8 @@
 <div class="container-md">
 <h1>register.jsp</h1>
 <br>
-<form action="/board/register" method="post">
+<!-- file upload를 위해 enctype="multipart/form-data" 추가 -->
+<form action="/board/register" method="post" enctype="multipart/form-data">
 	<div class="mb-3">
 	  <label for="title" class="form-label">Title</label>
 	  <!-- name의 값이 BoardVO의 멤버변수명과 일치하면 자동으로 찾아서 저장됨 -->
@@ -28,8 +29,22 @@
 	  <label for="content" class="form-label">Content</label><br>
 	  <textarea rows="3" cols="30" name="content" id="content" placeholder="Content..."></textarea>
 	</div>
-	<button type="submit" class="btn btn-primary">Register</button>
+	
+	<!-- file upload 관련 입력 라인 추가 -->
+	<div class="mb-3">
+	  <label for="file" class="form-label">files...</label>
+	  <input type="file" name="files" class="form-control" id="file" multiple="multiple" style="display: none">
+	  <br>
+	  <button type="button" class="btn btn-primary" id="trigger">fileUpload</button>
+	</div>
+	<!-- 파일 목록 표기 라인 -->
+	<div class="mb-3" id="fileZone"></div>
+	
+	<!-- 파일은 있을수도 있고 없을수도 있으므로 disabled 속성은 추가하지 않음 -->
+	<button type="submit" class="btn btn-primary" id="regBtn" >Register</button>
 </form>
 </div>
+
+<script type="text/javascript" src="/resources/js/boardRegister.js"></script>
 
 <jsp:include page="../layout/footer.jsp"></jsp:include>

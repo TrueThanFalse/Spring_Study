@@ -50,3 +50,15 @@ writer varchar(100) not null,
 content varchar(500),
 reg_date datetime default now(),
 primary key(cno));
+
+<<< 2023-12-26 >>>
+● file table 생성
+CREATE TABLE file(
+uuid varchar(256) NOT NULL,
+save_dir VARCHAR(256) NOT NULL,
+file_name VARCHAR(256) NOT NULL,
+file_type TINYINT(1) DEFAULT 0,
+bno INT,
+file_size INT,
+reg_date DATETIME DEFAULT NOW(),
+PRIMARY KEY(uuid));

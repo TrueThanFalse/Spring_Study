@@ -1,17 +1,23 @@
 package com.ezen.www.contorller;
 
+import java.util.List;
+
 import javax.inject.Inject;
 
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
+import org.springframework.validation.Errors;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
+import org.springframework.web.multipart.MultipartFile;
 import org.springframework.web.servlet.mvc.support.RedirectAttributes;
 
 import com.ezen.www.domain.BoardVO;
+import com.ezen.www.domain.FileVO;
 import com.ezen.www.domain.PagingVO;
+import com.ezen.www.handler.FileHandler;
 import com.ezen.www.handler.PagingHandler;
 import com.ezen.www.service.BoardService;
 
@@ -24,6 +30,10 @@ public class BoardController {
 
 	@Inject
 	private BoardService bsv;
+	
+	// file upload를 위해서 추가
+	@Inject
+	private FileHandler fhd;
 	
 	// case가 없으므로 각각 맵핑을 적용해야 함
 	// 들어오는 데이터가 get인지 post인지 어노테이션으로 인식 시켜줘야함
@@ -39,11 +49,30 @@ public class BoardController {
 	// @PostMapping은 객체로 들어옴 따라서 BoardVO를 파라미터로 넣어줘야 함
 	// @RequestParam("name") String name : 파라미터로 받을 때
 	@PostMapping("/register")
-	public String register(BoardVO bvo) {
+	public String register(BoardVO bvo, @RequestParam(name="files", required = false)MultipartFile[] files) {
+		/*
+		 * file upload를 위해서 @RequestParam으로 files를 불러오고
+		 * required : 필수 여부 / false로 설정하면 파라미터가 존재하지 않아도 Error가 발생하지 않음
+		 * MultipartFile 클래스를 활용하여 files를 배열로 불러오기
+		 */
 		log.info("register check 1");
-		log.info("bvo >>>{} " + bvo);
+		log.info("bvo >>>>> " + bvo);
+		log.info("files >>>>> " + files.toString());
 		
-		int isOK = bsv.register(bvo); 
+		// int isOK = bsv.register(bvo); => file upload 처리를 위해 주석 처리
+		
+		// FileHandler 처리
+		List<FileVO> flist = null;
+		
+		// 파일이 있을 경우만 fhd를 호출
+		if(files[0].getSize() > 0) {
+			// 0번지의 size가 0보다 크다는 것은 무언가 파일이 존재한다는 것
+			// files.length로 비교하면 Error가 발생할 수도 있음
+			// 배열보다 정확하게 자료 자체의 크기를 비교하면 오류 발생을 예방할 수 있음
+			
+			flist = fhd.uploadFiles(files);
+			log.info("flst >>>>> " + flist);
+		}
 				
 		// 목적지 경로
 		// BoardController의 list로 보내기

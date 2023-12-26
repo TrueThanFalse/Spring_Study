@@ -7,6 +7,7 @@ import javax.inject.Inject;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
+import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.DeleteMapping;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
@@ -103,7 +104,7 @@ public class CommentController {
 	}
 	 */
 	
-	
+	// @ResponseBody를 활용한 수정 로직 처리
 	@ResponseBody
 	@PutMapping("/modify")
 	public String modify(@RequestBody CommentVO cvo) {
@@ -114,4 +115,11 @@ public class CommentController {
 		
 		return isOK > 0 ? "1":"0";
 	}
+//	@PutMapping("/modify")
+//	public ResponseEntity<String> modify(@RequestBody CommentVO cvo) {
+//		int isOK csv.modify(cvo);
+//		return (isOK > 0) ? new ResponseEntity<String>("1", HttpStatus.OK)
+//				: new ResponseEntity<String>("0", HttpStatus.INTERNAL_SERVER_ERROR);
+//	}
+	
 }
