@@ -6,9 +6,12 @@ import javax.inject.Inject;
 
 import org.springframework.stereotype.Service;
 
+import com.ezen.www.domain.BoardDTO;
 import com.ezen.www.domain.BoardVO;
+import com.ezen.www.domain.FileVO;
 import com.ezen.www.domain.PagingVO;
 import com.ezen.www.repository.BoardDAO;
+import com.ezen.www.repository.FileDAO;
 
 import lombok.extern.slf4j.Slf4j;
 
@@ -19,11 +22,40 @@ public class BoardServiceImpl implements BoardService{
 	
 	@Inject
 	private BoardDAO bdao;
+	
+	@Inject
+	private FileDAO fdao;
 
 	@Override
-	public int register(BoardVO bvo) {
+	public int register(BoardDTO bdto) {
 		log.info("register check 2");
-		return bdao.register(bvo);
+		// 기존 보드 내용을 DB에 저장
+		int isOK = bdao.register(bdto.getBvo());
+		// FileHandler에서는 bno가 생성되지 않으므로 설정할 수 없었음
+		// 하지만 지금 이 시점에서 insert를 하면서 bno가 자동 생성됨
+		
+		// flist를 DB에 저장
+		if(bdto.getFlist() == null) {
+			// 파일을 업로드 하지 않을 수 있음
+			// => flist가 null이 됨
+			isOK *= 1; // 그냥 성공한 것으로 처리
+		}else {
+			// 파일 저장
+			if(isOK > 0 && bdto.getFlist().size() > 0) {
+				// bdto.getFlist().size() > 0 : 실질적으로 파일이 존재하는지 확인
+				// fvo는 bno가 아직 설정되지 않았음
+				// 현재 bdto 시점에서는 아직 bno가 생성되지 않음
+				// register를 통해 자동으로 bno가 생성되었음 => 최신 bno를 불러오면 그 bno에 저장되는 것임 
+				int bno = bdao.selectBno();
+				
+				for(FileVO fvo : bdto.getFlist()) {
+					fvo.setBno(bno); // fvo 완성 => flist는 board에 종속되므로 file은 동일한 bno를 가져야됨
+					// 파일을 DB에 저장
+					isOK *= fdao.insertFile(fvo);
+				}
+			}
+		}
+		return isOK;
 	}
 
 	@Override
@@ -33,11 +65,18 @@ public class BoardServiceImpl implements BoardService{
 	}
 
 	@Override
-	public BoardVO getDetail(int bno) {
+	public BoardDTO getDetail(int bno) {
 		log.info("detail check 2");
+		
 		bdao.read_countUP(bno);
 		// commit을 spring이 자동으로 해줌.? 맞나? 검색 필요
-		return bdao.getDetail(bno);
+		
+		// 파일 업로드를 위해 추가
+		BoardDTO boardDTO = new BoardDTO();
+		boardDTO.setBvo(bdao.getDetail(bno)); // 기존 게시글 내용을 DTO에 채우기
+		boardDTO.setFlist(fdao.getFileList(bno)); // bno에 해당하는 모든 파일 리스트 검색
+		
+		return boardDTO;
 	}
 
 	@Override
@@ -55,5 +94,11 @@ public class BoardServiceImpl implements BoardService{
 	@Override
 	public int getTotalCount(PagingVO pgvo) {
 		return bdao.getTotalCount(pgvo);
+	}
+
+	@Override
+	public int removeFile(FileVO fvo) {
+		log.info("removeFile check 2");
+		return fdao.removeFile(fvo);
 	}
 }

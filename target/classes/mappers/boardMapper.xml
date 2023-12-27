@@ -84,4 +84,9 @@
 		</if>
 	</sql>
 	
+	<select id="selectBno" resultType="int">
+		SELECT max(bno) FROM board
+		<!-- SELECT bno FROM board ORDER BY bno DESC LIMIT 0 : 이 SQL 구문도 가능 -->
+	</select>
+	
 </mapper>

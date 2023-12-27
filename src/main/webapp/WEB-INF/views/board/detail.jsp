@@ -1,6 +1,7 @@
 <%@ page language="java" contentType="text/html; charset=UTF-8"
     pageEncoding="UTF-8"%>
 <%@ taglib uri="http://java.sun.com/jsp/jstl/core" prefix="c" %>
+<%@ taglib uri="http://java.sun.com/jsp/jstl/functions" prefix="fn" %>
 <!DOCTYPE html>
 <html>
 <head>
@@ -14,11 +15,14 @@
 <div class="container-md">
 <h1>board Detail.jsp</h1>
 <br>
+<!-- c:set을 활용하여 코드 길이를 줄일 수 있음 -->
+<c:set value="${boardDTO.bvo }" var="bvo"/>
 <table class="table">
 	<tr>
 	<div class="mb-3">
 	  <label for="title" class="form-label">Title</label>
-	  <input type="text" name="title" class="form-control" id="title" placeholder="Title..." readonly="readonly" value="${bvo.title }">
+	  <input type="text" name="title" class="form-control" id="title" placeholder="Title..." readonly="readonly" value="${boardDTO.bvo.title }">
+	  <%-- c:set 설정으로 value에 boardDTO.bvo.title OR bvo.title 모두 사용해도 됨 --%>
 	</div>
 	</tr>
 	<tr>
@@ -27,6 +31,45 @@
 	  <input type="text" name="writer" class="form-control" id="writer" placeholder="Writer..." readonly="readonly" value="${bvo.writer }">
 	</div>
 	</tr>
+	
+	<!-- 파일 표시 라인 -->
+	<c:set value="${boardDTO.flist }" var="flist"/>
+	<div class="mb-3">
+		<ul class="list-group">
+			<!-- 파일의 개수만큼 li를 추가하여 파일을 표시, 타입이 1인 경우만 표시(이미지 타입일 때만 표시) -->
+			<!-- 
+				하나의 li -> div를 넣어서 img 그림 표시
+							div를 하나 더 넣어서 파일이름, 작성일, span태그로 size
+			-->
+			<!-- 파일 리스트 중 하나만 가져와서 fvo로 저장 -->
+			<c:forEach items="${flist }" var="fvo">
+				<li class="list-group-item">
+					<c:choose>
+						<c:when test="${fvo.file_type > 0 }">
+							<div>
+								<!-- /upload/ : servlet-context 로케이션 설정에서 경로를 미리 지정해두었음 -->
+								<img alt="" src="/upload/${fn:replace(fvo.save_dir, '\\', '/')}/${fvo.uuid}_th_${fvo.file_name}">
+							</div>
+						</c:when>
+						<c:otherwise>
+							<div>
+								<!-- 아이콘 하나 가져와서 넣기 -->
+								<i class="bi bi-file-excel-fill"></i>
+							</div>
+						</c:otherwise>
+					</c:choose>
+					<!-- div를 하나 더 넣어서 파일이름, 작성일, span태그로 size -->
+					<div class="badge bg-primary text-wrap">
+						${fvo.file_name }<br>
+						${fvo.reg_date }
+					</div>
+					<br>
+					<span class="badge text-bg-primary">${fvo.file_size }Byte</span>
+				</li>
+			</c:forEach>
+		</ul>
+	</div>
+	
 	<tr>
 	<div class="mb-3">
 	  <label for="content" class="form-label">Content</label><br>

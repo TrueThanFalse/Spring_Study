@@ -7,13 +7,17 @@ import javax.inject.Inject;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.validation.Errors;
+import org.springframework.web.bind.annotation.DeleteMapping;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PostMapping;
+import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
+import org.springframework.web.bind.annotation.ResponseBody;
 import org.springframework.web.multipart.MultipartFile;
 import org.springframework.web.servlet.mvc.support.RedirectAttributes;
 
+import com.ezen.www.domain.BoardDTO;
 import com.ezen.www.domain.BoardVO;
 import com.ezen.www.domain.FileVO;
 import com.ezen.www.domain.PagingVO;
@@ -59,7 +63,7 @@ public class BoardController {
 		log.info("bvo >>>>> " + bvo);
 		log.info("files >>>>> " + files.toString());
 		
-		// int isOK = bsv.register(bvo); => file upload 처리를 위해 주석 처리
+		
 		
 		// FileHandler 처리
 		List<FileVO> flist = null;
@@ -69,16 +73,32 @@ public class BoardController {
 			// 0번지의 size가 0보다 크다는 것은 무언가 파일이 존재한다는 것
 			// files.length로 비교하면 Error가 발생할 수도 있음
 			// 배열보다 정확하게 자료 자체의 크기를 비교하면 오류 발생을 예방할 수 있음
-			
 			flist = fhd.uploadFiles(files);
 			log.info("flst >>>>> " + flist);
+		}else {
+			// 만약 파일이 없다면?
+			// 사실상 required = false 파라미터 설정으로 Error가 발생하진 않음
+			log.info("file null");
 		}
+		
+		BoardDTO bdto = new BoardDTO(bvo,flist);
+		
+		int isOK = bsv.register(bdto);
+		log.info("board register >>>>> " + (isOK > 0 ? "Success":"Fail"));
 				
 		// 목적지 경로
 		// BoardController의 list로 보내기
 		return "redirect:/board/list";
 		// redirect: => Controller로 전송하는 키워드? 내부 로직을 한번 실행해주는 키워드?, 검색해서 정확하게 찾아보기
 	}
+	
+//	<-- file upload 로직을 만들어 사용하기 위해서 기존 register는 주석 처리 -->
+//	@PostMapping("/register")
+//	public String register(BoardVO bvo) {
+//		log.info("register check 1");
+//		int isOK = bsv.register(bvo);
+//		return "redirect:/board/list";
+//	}
 	
 	// 들어 오는 경로 : /board/list & 보내는 경로 /board/list => 사실상 void 처리해도 문제 없음
 	@GetMapping("list")
@@ -105,8 +125,11 @@ public class BoardController {
 	public void detail(Model m, @RequestParam("bno") int bno) {
 		log.info("detail check 1");
 		log.info("bno >>>{} " + bno);
-		m.addAttribute("bvo", bsv.getDetail(bno));
+//		m.addAttribute("bvo", bsv.getDetail(bno));
 		// modify로 들어올 때 read_count가 1개 올라가는 모순이 발생함
+		
+		// 파일 내용도 포함해서 같이 보내기
+		m.addAttribute("boardDTO", bsv.getDetail(bno));
 	}
 
 	@PostMapping("/edit")
@@ -144,5 +167,14 @@ public class BoardController {
 		return "redirect:/board/list";
 	}
 	
+	// file 삭제
+	@DeleteMapping("/removeFile")
+	@ResponseBody
+	public String removeFile(@RequestBody FileVO fvo) {
+		log.info("removeFile check 1");
+		log.info("fvo >>>>> " + fvo);
+		int isOK = bsv.removeFile(fvo);
+		return isOK > 0 ? "1":"0";
+	}
 	
 }

@@ -62,6 +62,7 @@ public class FileHandler {
 			// 파일 이름(originalName())은 파일 경로를 포함하고 있을 수도 있음
 			String originalFileName = file.getOriginalFilename(); // 실제 파일명 추출
 			String onlyFileName = originalFileName.substring(originalFileName.lastIndexOf(File.separator)+1);
+			fvo.setFile_name(onlyFileName);
 			
 			// UUID 생성 => 파일명 중복 방지를 위해 활용
 			UUID uuid = UUID.randomUUID();

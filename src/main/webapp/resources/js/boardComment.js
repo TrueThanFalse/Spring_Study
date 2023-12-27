@@ -1,4 +1,4 @@
-console.log("boardComment.js Join Success!!!");
+console.log("boardComment.js Join Success");
 console.log("bno >>>>> "+bnoVal);
 
 document.getElementById("cmtAddBtn").addEventListener('click', ()=>{

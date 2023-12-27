@@ -1,3 +1,5 @@
+console.log("boardRegister.js Join Success");
+
 document.getElementById('trigger').addEventListener('click', ()=>{
     document.getElementById('file').click();
 })
