@@ -17,12 +17,14 @@ public interface BoardService {
 	BoardDTO getDetail(int bno);
 	// Object를 BoardVO로 변경
 
-	int edit(BoardVO bvo);
+	int edit(BoardDTO bdto);
 
 	int delete(int bno);
 
 	int getTotalCount(PagingVO pgvo);
 
 	int removeFile(FileVO fvo);
+
+	int removeFile2(String uuid);
 
 }

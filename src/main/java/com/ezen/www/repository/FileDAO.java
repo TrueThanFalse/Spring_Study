@@ -11,5 +11,12 @@ public interface FileDAO {
 	List<FileVO> getFileList(int bno);
 
 	int removeFile(FileVO fvo);
+
+	void boardVOFileCountDown(FileVO fvo);
+
+	int fileremove(FileVO uuid);
+
+	int fileremove2(String uuid);
+
 	
 }

@@ -89,4 +89,26 @@
 		<!-- SELECT bno FROM board ORDER BY bno DESC LIMIT 0 : 이 SQL 구문도 가능 -->
 	</select>
 	
+	<update id="boardVOCommentCountUp">
+		UPDATE board SET commentCount = commentCount + 1 WHERE bno = #{bno}
+	</update>
+	
+	<update id="boardVOCommentCountDown">
+		UPDATE board SET commentCount = commentCount - 1 WHERE bno = #{bno}
+	</update>
+	
+	<update id="boardVOFileCountUP">
+		UPDATE board SET fileCount = fileCount + 1 WHERE bno = #{bno}
+	</update>
+	
+	<update id="boardVOFileCountDown">
+		UPDATE board SET fileCount = fileCount - 1 WHERE bno = ${bno};
+	</update>
+	
+	<!-- 선생님의 CommentCount UPDATE -->
+	<update id="updateCommentCount">
+		UPDATE board b SET commentCount =
+		(SELECT count(bno) FROM comment WHERE bno = b.bno);
+	</update>
+	
 </mapper>

@@ -17,4 +17,9 @@
 	<delete id="removeFile">
 		DELETE FROM file WHERE uuid = #{uuid}
 	</delete>
+	
+	<delete id="fileremove2">
+		DELETE FROM file WHERE uuid = #{uuid}
+	</delete>
+	
 </mapper>

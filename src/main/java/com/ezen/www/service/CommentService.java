@@ -10,7 +10,7 @@ public interface CommentService {
 
 	List<CommentVO> getList(int bno);
 
-	int commentDelete(int cno);
+	int commentDelete(int cno, int bno);
 
 	int modify(CommentVO cvo);
 

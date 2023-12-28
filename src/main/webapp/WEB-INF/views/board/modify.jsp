@@ -16,7 +16,8 @@
 <h1>board Modify.jsp</h1>
 <c:set value="${boardDTO.bvo }" var="bvo"/>
 <br>
-<form action="/board/edit" method="post">
+<!-- 파일 업로드를 위해서 폼 태그에 enctype="multipart/form-data" 추가 -->
+<form action="/board/edit" method="post" enctype="multipart/form-data">
 <table class="table">
 	<tr>
 	<div class="mb-3">
@@ -77,7 +78,8 @@
 					</div>
 					<span class="badge text-bg-primary">${fvo.file_size }Byte</span>
 					<button type="button" class="file-x" data-uuid="${fvo.uuid }">X</button>
-					<!-- X 버튼은 비동기로 버튼을 누르면 uuid와 비교하여 DB와 파일을 저장하는 로컬 폴더에서 삭제하면 됨 -->
+					<!-- X 버튼을 누르면 비동기로 uuid와 비교하여 DB에서 file 삭제. -->
+					<!-- 로컬 폴더에 저장되어 있는 실제 file은 이번에는 삭제하지 않겠음 -->
 				</li>
 			</c:forEach>
 		</ul>
@@ -99,14 +101,19 @@
 	<!-- file 업로드를 위해서 id="regBtn" 추가 -->
 	<button type="submit" class="btn btn-primary" id="regBtn">Edit</button>
 	<a href="/board/list"><button type="button" class="btn btn-primary">List</button></a>
-	<input type="hidden" name="bno" value="${bvo.bno }"> 
+	<!-- bno를 넘기기위한 hidden input -->
+	<input type="hidden" name="bno" value="${bvo.bno }">
 	</tr>
 </table>
 </div>
 </form>
 	
-	<!-- file 업로드를 위해서 register.jsp에서 js 복사 -->
+	<script type="text/javascript">
+		const bnoVal = `<c:out value="${boardDTO.bvo.bno}"/>`;
+	</script>
+	<!-- file 업로드를 위해서 boardRegister.js 추가 -->
 	<script type="text/javascript" src="/resources/js/boardRegister.js"></script>
+	<!-- 파일 modify와 delete 관련된 js 삽입 -->
 	<script type="text/javascript" src="/resources/js/boardModify.js"></script>
 	<jsp:include page="../layout/footer.jsp"></jsp:include>
 	

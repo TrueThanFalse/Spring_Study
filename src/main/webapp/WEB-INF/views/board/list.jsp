@@ -44,6 +44,7 @@
 </div>
 <!-- 검색 끝 -->
 
+<!-- boardVO list 출력 라인 -->
 <table class="table">
   <thead>
     <tr>
@@ -57,7 +58,11 @@
   	<c:forEach items="${list }" var="bvo">
     <tr>
       <th scope="row">${bvo.bno }</th>
-      <td><a href="/board/detail?bno=${bvo.bno }">${bvo.title }</a></td>
+      <td>
+      	<a href="/board/detail?bno=${bvo.bno }">${bvo.title }</a>
+      	<span class="badge bg-secondary">${bvo.commentCount }</span>
+      	<span class="badge bg-secondary">${bvo.fileCount }</span>
+      </td>
       <td>${bvo.writer }</td>
       <td>${bvo.reg_date }</td>
       <td>${bvo.read_count }</td>

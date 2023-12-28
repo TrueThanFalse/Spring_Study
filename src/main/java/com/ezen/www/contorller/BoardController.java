@@ -4,11 +4,15 @@ import java.util.List;
 
 import javax.inject.Inject;
 
+import org.springframework.http.HttpStatus;
+import org.springframework.http.MediaType;
+import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.validation.Errors;
 import org.springframework.web.bind.annotation.DeleteMapping;
 import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
@@ -71,13 +75,18 @@ public class BoardController {
 		// 파일이 있을 경우만 fhd를 호출
 		if(files[0].getSize() > 0) {
 			// 0번지의 size가 0보다 크다는 것은 무언가 파일이 존재한다는 것
-			// files.length로 비교하면 Error가 발생할 수도 있음
-			// 배열보다 정확하게 자료 자체의 크기를 비교하면 오류 발생을 예방할 수 있음
+			// files.length로 비교하면 files가 null 혹은 0으로 값이 들어오면서 Error가 발생할 수도 있음
+			// 배열보다 정확하게 파일 자체의 크기를 비교하면 오류 발생을 예방할 수 있음
+			
+			// 선생님의 파일 등록 전에 파일 개수를 bvo의 fileCount에 직접 set하면 list에 뿌릴 수 있음
+			// bvo.setFileCount(files.length);
+			
 			flist = fhd.uploadFiles(files);
 			log.info("flst >>>>> " + flist);
 		}else {
 			// 만약 파일이 없다면?
 			// 사실상 required = false 파라미터 설정으로 Error가 발생하진 않음
+			// 따라서 log만 띄워서 확인하도록 만들 것임 (위에 선언한 flist는 null로 유지됨)
 			log.info("file null");
 		}
 		
@@ -125,29 +134,50 @@ public class BoardController {
 	public void detail(Model m, @RequestParam("bno") int bno) {
 		log.info("detail check 1");
 		log.info("bno >>>{} " + bno);
-//		m.addAttribute("bvo", bsv.getDetail(bno));
 		// modify로 들어올 때 read_count가 1개 올라가는 모순이 발생함
 		
+		// m.addAttribute("bvo", bsv.getDetail(bno));
 		// 파일 내용도 포함해서 같이 보내기
 		m.addAttribute("boardDTO", bsv.getDetail(bno));
 	}
 
 	@PostMapping("/edit")
-	public String edit(BoardVO bvo, Model m) {
+	public String edit(BoardVO bvo, @RequestParam(name="files", required = false)MultipartFile[] files) {
 		// Model 객체는 Spring이 생성해서 edit 메서드에 넣어주는 것임
 		log.info("edit check 1");
 		log.info("bvo >>>{} " + bvo);
 		
+		List<FileVO> flist = null;
+		if(files[0].getSize() > 0) {
+			flist = fhd.uploadFiles(files);
+		}
+		
 		// update
-		int isOK = bsv.edit(bvo);
+		BoardDTO boardDTO = new BoardDTO(bvo, flist);
+		int isOK = bsv.edit(boardDTO);
 		log.info("edit >>>{} "+(isOK > 0 ? "Success" : "Fail"));
 		
-		m.addAttribute("bno", bvo.getBno());
-		
-		return "redirect:/board/detail";
-		// bno가 필요 => Model 객체를 활용하거나 쿼리스트링으로 보낼 수 있음
-		// return "redirect:/board/detail?bno="bvo.getBno();
+		// bno가 필요 => Model 객체를 활용하거나 쿼리스트링으로 보낼 수 있음		
+		return "redirect:/board/detail?bno="+bvo.getBno();
+		// m.addAttribute("bno", bvo.getBno()); => 모델 객체를 사용할 겨우
 	}
+//	파일 업로드로 수정하기 전 /edit 메서드 로직 정보
+//	@PostMapping("/edit")
+//	public String edit(BoardVO bvo, Model m) {
+//		// Model 객체는 Spring이 생성해서 edit 메서드에 넣어주는 것임
+//		log.info("edit check 1");
+//		log.info("bvo >>>{} " + bvo);
+//		
+//		// update
+//		int isOK = bsv.edit(bvo);
+//		log.info("edit >>>{} "+(isOK > 0 ? "Success" : "Fail"));
+//		
+//		m.addAttribute("bno", bvo.getBno());
+//		
+//		return "redirect:/board/detail";
+//		// bno가 필요 => Model 객체를 활용하거나 쿼리스트링으로 보낼 수 있음
+//		// return "redirect:/board/detail?bno="bvo.getBno();
+//	}
 	
 	@GetMapping("/delete")
 	public String delete(@RequestParam("bno") int bno, RedirectAttributes re) {
@@ -167,7 +197,7 @@ public class BoardController {
 		return "redirect:/board/list";
 	}
 	
-	// file 삭제
+	// modify.jsp에서 file 삭제
 	@DeleteMapping("/removeFile")
 	@ResponseBody
 	public String removeFile(@RequestBody FileVO fvo) {
@@ -176,5 +206,12 @@ public class BoardController {
 		int isOK = bsv.removeFile(fvo);
 		return isOK > 0 ? "1":"0";
 	}
-	
+	// 선생님의 modify.jsp에서 파일 삭제
+	@DeleteMapping(value="/file/{uuid}", produces = MediaType.TEXT_PLAIN_VALUE)
+	public ResponseEntity<String> removeFile2(@PathVariable("uuid")String uuid){
+		log.info("uuid >>>>> "+uuid);
+		int isOK = bsv.removeFile2(uuid);
+		return isOK > 0 ? new ResponseEntity<String>("1", HttpStatus.OK) :
+				new ResponseEntity<String>("0", HttpStatus.INTERNAL_SERVER_ERROR);
+	}
 }

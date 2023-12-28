@@ -6,21 +6,6 @@ import lombok.NoArgsConstructor;
 import lombok.Setter;
 import lombok.ToString;
 
-/*
- *  create table board(
-	bno int auto_increment,
-	title varchar(200),
-	writer varchar(200),
-	content text,
-	isDel varchar(10) default 'N',
-	reg_date datetime default now(),
-	read_count int,
-	primary key(bno)
-	);
-	
-	alter table board modify read_count int default 0;
- */
-
 // lombok의 @data는 편리하지만 보안상 사용하지 않는 것이 옳다.
 
 // 어노테이션을 활용하여 lombok import 하기
@@ -40,5 +25,8 @@ public class BoardVO {
 	private String isDel;
 	private String reg_date;
 	private int read_count;
+	
+	private int commentCount;
+	private int fileCount;
 	
 }

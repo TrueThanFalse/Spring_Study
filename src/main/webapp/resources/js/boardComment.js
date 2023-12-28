@@ -1,4 +1,4 @@
-console.log("boardComment.js Join Success");
+console.log("boardComment.js Join Success!!!");
 console.log("bno >>>>> "+bnoVal);
 
 document.getElementById("cmtAddBtn").addEventListener('click', ()=>{
@@ -22,6 +22,8 @@ document.getElementById("cmtAddBtn").addEventListener('click', ()=>{
             console.log(result);
             if(result === "1"){
                 alert("댓글 등록 성공");
+                // comment 등록 input 태그 초기화
+                cmtText = '';
                 // 화면에 뿌리기
                 PrintCommentList(bnoVal);
             }
@@ -108,9 +110,12 @@ function PrintCommentList(bno){
 }
 
 // 비동기 삭제
-async function removeCommentFromServer(cnoVal){
+async function removeCommentFromServer(cnoVal, bnoVal){
     try {
-        const url = "/comment/"+cnoVal;
+        // comment 삭제시 boardVO의 멤버변수 commentCount의 값을 내리기 위해 bnoVal도 보내기
+        // 다시 살펴보니 bnoVal을 보낼 필요가 없음. cvo 내부에 bno가 있으므로...
+        // 최상단의 document.getElementById("cmtAddBtn").addEventListener 보면 알 수 있음
+        const url = "/comment/"+cnoVal+"/"+bnoVal;
         const config = {
             method:"delete"
         }
@@ -136,7 +141,7 @@ async function updateCommentToServer(cmtData){
         };
 
         const resp = await fetch(url, config);
-        const result = await resp.text();
+        const result = await resp.text(); // body의 타입이 text다.
         return result;
     } catch (error) {
         console.log(error);
@@ -152,7 +157,7 @@ document.addEventListener('click', (e)=>{
         // data-변수명 : dataset 키워드로 추출 가능
         let cnoVal = e.target.dataset.cno;
         
-        removeCommentFromServer(cnoVal).then(result =>{
+        removeCommentFromServer(cnoVal, bnoVal).then(result =>{
             if(result == 1){
                 alert("댓글 삭제 성공");
                 PrintCommentList(bnoVal);

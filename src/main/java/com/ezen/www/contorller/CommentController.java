@@ -77,14 +77,14 @@ public class CommentController {
 	// 삭제
 	// {cnoVal}는 실질적으로는 숫자로 들어옴, 따라서 {}내부 명칭은 자유롭게 정할 수 있음
 	// JS에서 method를 delete로 전송했으므로 @DeleteMapping로 받아야 함
-	@DeleteMapping(value = "/{cnoVal}", produces = MediaType.APPLICATION_JSON_VALUE)
-	public ResponseEntity<String> commentDelete(@PathVariable("cnoVal") int cno){
-		// 통신간 기본 타입은 String이므로 사실상 produces = MediaType.APPLICATION_JSON_VALUE은 생략해도 된다.
+	@DeleteMapping(value = "/{cnoVal}/{bnoVal}", produces = MediaType.TEXT_PLAIN_VALUE)
+	public ResponseEntity<String> commentDelete(@PathVariable("cnoVal") int cno, @PathVariable("bnoVal") int bno){
+		// 통신간 기본 타입은 String이므로 사실상 produces = TEXT_PLAIN_VALUE은 생략해도 된다.
 		// 하지만 간혹 한글을 인식 못하는 encoding 문제가 발생 할 수 있어서
-		// produces = MediaType.APPLICATION_JSON_VALUE를 작성하면 확실하게 인식 시켜줄 수 있는 장점이 있다.
+		// produces = MediaType.TEXT_PLAIN_VALUE를 작성하면 확실하게 인식 시켜줄 수 있는 장점이 있다.
 		log.info("bno >>>>> "+cno);
 		
-		int isOK = csv.commentDelete(cno);
+		int isOK = csv.commentDelete(cno,bno);
 		log.info("commentDelete >>>>> "+(isOK > 0 ? "Success":"Fail"));
 		
 		return (isOK > 0) ? new ResponseEntity<String>("1", HttpStatus.OK)
